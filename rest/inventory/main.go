@@ -1,22 +1,21 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	const port string = ":8888"
-	router := mux.NewRouter()
+	const port string = ":9000"
+	r := gin.Default()
 
-	router.HandleFunc("/ping", ping).Methods("GET")
+	r.GET("/ping", ping)
 
 	log.Println("Server listening on port", port)
 
-	if err := http.ListenAndServe(port, router); err != nil {
+	if err := http.ListenAndServe(port, r); err != nil {
 		log.Fatalln(err)
 	}
 }
@@ -26,11 +25,8 @@ type ResponseInfo struct {
 	Data  string `json:"data"`
 }
 
-func ping(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	json.NewEncoder(w).Encode(ResponseInfo{
+func ping(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, ResponseInfo{
 		Error: false,
 		Data:  "pong",
 	})
