@@ -48,10 +48,10 @@ func main() {
 
 	r.GET("/", index)
 	r.GET("/books", getBooks)
-	r.GET("/books/{id}", getBook)
 	r.POST("/books", addBook)
-	r.PUT("/books/{id}", updateBook)
-	r.DELETE("/books/{id}", deleteBook)
+	r.GET("/books/:id", getBook)
+	r.PUT("/books/:id", updateBook)
+	r.DELETE("/books/:id", deleteBook)
 
 	log.Println("Server listening on port", port)
 
@@ -80,64 +80,77 @@ type ResponseInfo struct {
 	Data  string `json:"data"`
 }
 
-func getBook(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	params := mux.Vars(r)
+func getBook(ctx *gin.Context) {
+	idParam := ctx.Param("id")
 
-	idRequest, err := strconv.Atoi(params["id"])
+	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(ResponseInfo{
-			Error: true,
-			Data:  err.Error(),
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": true,
+			"data":  err.Error(),
 		})
 		return
 	}
 
 	for _, v := range db {
-		if v.ID == idRequest {
-			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(&v)
+		if v.ID == id {
+			ctx.JSON(http.StatusOK, gin.H{
+				"error": false,
+				"data":  v,
+			})
 			return
 		}
 	}
 
-	w.WriteHeader(http.StatusNotFound)
-	json.NewEncoder(w).Encode(ResponseInfo{
-		Error: true,
-		Data:  "book not found",
+	ctx.JSON(http.StatusNotFound, gin.H{
+		"error": true,
+		"data":  "book not found",
 	})
 }
 
-func addBook(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+func addBook(ctx *gin.Context) {
+	request := ctx.Request
 
 	var book Book
-	json.NewDecoder(r.Body).Decode(&book)
+	err := json.NewDecoder(request.Body).Decode(&book)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": true,
+			"data":  err.Error(),
+		})
+		return
+	}
 
 	db = append(db, book)
 
-	json.NewEncoder(w).Encode(db)
+	ctx.JSON(http.StatusOK, gin.H{
+		"error": false,
+		"data":  db,
+	})
 }
 
-func updateBook(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+func updateBook(ctx *gin.Context) {
+	r := ctx.Request
+	idParam := ctx.Param("id")
 
-	params := mux.Vars(r)
-
-	id, err := strconv.Atoi(params["id"])
+	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(ResponseInfo{
-			Error: true,
-			Data:  err.Error(),
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": true,
+			"data":  err.Error(),
 		})
 		return
 	}
 
 	var book Book
-	json.NewDecoder(r.Body).Decode(&book)
+	err = json.NewDecoder(r.Body).Decode(&book)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": true,
+			"data":  err.Error(),
+		})
+		return
+	}
 
 	for i, v := range db {
 		if v.ID == id {
@@ -145,45 +158,22 @@ func updateBook(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(db)
+	ctx.JSON(http.StatusOK, gin.H{
+		"error": false,
+		"data":  db,
+	})
 }
 
-func updateBook2(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
+func deleteBook(ctx *gin.Context) {
+	idParam := ctx.Param("id")
 
-	id, err := strconv.Atoi(params["id"])
+	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		encodeJSON(w, ResponseInfo{
-			Error: true,
-			Data:  err.Error(),
-		}, http.StatusBadRequest)
-		return
-	}
-
-	var book Book
-	json.NewDecoder(r.Body).Decode(&book)
-
-	for i, v := range db {
-		if v.ID == id {
-			db[i] = book
-		}
-	}
-
-	encodeJSON(w, db, http.StatusOK)
-}
-
-func deleteBook(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	params := mux.Vars(r)
-
-	id, err := strconv.Atoi(params["id"])
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(ResponseInfo{
-			Error: true,
-			Data:  err.Error(),
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": true,
+			"data":  err.Error(),
 		})
+		return
 	}
 
 	for i, v := range db {
@@ -192,12 +182,8 @@ func deleteBook(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(db)
-}
-
-func encodeJSON(w http.ResponseWriter, v interface{}, status int) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(v)
+	ctx.JSON(http.StatusOK, gin.H{
+		"error": false,
+		"data":  db,
+	})
 }
