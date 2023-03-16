@@ -2,12 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
 const port = ":9000"
@@ -45,14 +44,14 @@ func main() {
 
 	db = append(db, b1, b2, b3)
 
-	r := mux.NewRouter()
+	r := gin.Default()
 
-	r.HandleFunc("/", index)
-	r.HandleFunc("/books", getBooks).Methods("GET")
-	r.HandleFunc("/books/{id}", getBook).Methods("GET")
-	r.HandleFunc("/books", addBook).Methods("POST")
-	r.HandleFunc("/books/{id}", updateBook).Methods("PUT")
-	r.HandleFunc("/books/{id}", deleteBook).Methods("DELETE")
+	r.GET("/", index)
+	r.GET("/books", getBooks)
+	r.GET("/books/{id}", getBook)
+	r.POST("/books", addBook)
+	r.PUT("/books/{id}", updateBook)
+	r.DELETE("/books/{id}", deleteBook)
 
 	log.Println("Server listening on port", port)
 
@@ -65,15 +64,15 @@ func main() {
 w response: respuesta del servidor al cliente
 r request: peticion del cliente al servidor
 */
-func index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Bienvenido a mi increible API!")
+func index(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, "Bienvenido a mi increible API!")
 }
 
-func getBooks(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	json.NewEncoder(w).Encode(db)
+func getBooks(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{
+		"error": false,
+		"data":  db,
+	})
 }
 
 type ResponseInfo struct {
