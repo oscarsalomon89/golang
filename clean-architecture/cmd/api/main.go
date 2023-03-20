@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/teamcubation/neocamp-meli/clean-architecture/internal/domain"
-	repo "github.com/teamcubation/neocamp-meli/clean-architecture/internal/infrastructure/database/memory"
 	"github.com/teamcubation/neocamp-meli/clean-architecture/internal/infrastructure/http"
 	ctrl "github.com/teamcubation/neocamp-meli/clean-architecture/internal/infrastructure/http/controller"
+	repo "github.com/teamcubation/neocamp-meli/clean-architecture/internal/infrastructure/repository/memory"
 	"github.com/teamcubation/neocamp-meli/clean-architecture/internal/usecase"
 )
 
