@@ -1,25 +1,24 @@
 package memory
 
 import (
-	"github.com/teamcubation/neocamp-meli/clean-architecture/internal/domain/model"
-	"github.com/teamcubation/neocamp-meli/clean-architecture/internal/domain/repository"
+	"github.com/teamcubation/neocamp-meli/clean-architecture/internal/domain"
 )
 
 type bookRepository struct {
-	db []model.Book
+	db []domain.Book
 }
 
-func NewBookRepository(db []model.Book) repository.BookRepository {
+func NewBookRepository(db []domain.Book) domain.BookRepository {
 	return &bookRepository{
 		db: db,
 	}
 }
 
-func (r *bookRepository) GetAllBooks() []model.Book {
+func (r *bookRepository) GetAllBooks() []domain.Book {
 	return r.db
 }
 
-func (r *bookRepository) SaveBook(book model.Book) model.Book {
+func (r *bookRepository) SaveBook(book domain.Book) domain.Book {
 	r.db = append(r.db, book)
 
 	return book

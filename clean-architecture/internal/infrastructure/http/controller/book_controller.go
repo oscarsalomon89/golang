@@ -1,30 +1,30 @@
-package router
+package controller
 
 import (
 	"encoding/json"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/teamcubation/neocamp-meli/clean-architecture/internal/domain/model"
+	"github.com/teamcubation/neocamp-meli/clean-architecture/internal/domain"
 	"github.com/teamcubation/neocamp-meli/clean-architecture/internal/usecase"
 )
 
-type BookHandler interface {
+type BookController interface {
 	GetBooks(ctx *gin.Context)
 	SaveBook(ctx *gin.Context)
 }
 
-type bookHandler struct {
+type bookController struct {
 	bookUsecase usecase.BookUsecase
 }
 
-func NewBookHandler(bookUsecase usecase.BookUsecase) BookHandler {
-	return &bookHandler{
+func NewBookHandler(bookUsecase usecase.BookUsecase) BookController {
+	return &bookController{
 		bookUsecase: bookUsecase,
 	}
 }
 
-func (h *bookHandler) GetBooks(ctx *gin.Context) {
+func (h *bookController) GetBooks(ctx *gin.Context) {
 	books := h.bookUsecase.GetAllBooks()
 
 	ctx.JSON(http.StatusOK, gin.H{
@@ -33,8 +33,8 @@ func (h *bookHandler) GetBooks(ctx *gin.Context) {
 	})
 }
 
-func (h *bookHandler) SaveBook(ctx *gin.Context) {
-	var book model.Book
+func (h *bookController) SaveBook(ctx *gin.Context) {
+	var book domain.Book
 	if err := json.NewDecoder(ctx.Request.Body).Decode(&book); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": false,

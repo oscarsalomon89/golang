@@ -1,15 +1,16 @@
 package main
 
 import (
-	"github.com/teamcubation/neocamp-meli/clean-architecture/internal/domain/model"
+	"github.com/teamcubation/neocamp-meli/clean-architecture/internal/domain"
 	repo "github.com/teamcubation/neocamp-meli/clean-architecture/internal/infrastructure/database/memory"
-	router "github.com/teamcubation/neocamp-meli/clean-architecture/internal/infrastructure/httpserver"
+	"github.com/teamcubation/neocamp-meli/clean-architecture/internal/infrastructure/http"
+	ctrl "github.com/teamcubation/neocamp-meli/clean-architecture/internal/infrastructure/http/controller"
 	"github.com/teamcubation/neocamp-meli/clean-architecture/internal/usecase"
 )
 
 const port = "9000"
 
-var db []model.Book = []model.Book{
+var db []domain.Book = []domain.Book{
 	{
 		ID:     1,
 		Title:  "Dune",
@@ -33,8 +34,8 @@ var db []model.Book = []model.Book{
 func main() {
 	repository := repo.NewBookRepository(db)
 	usecase := usecase.NewBookUsecase(repository)
-	handler := router.NewBookHandler(usecase)
-	server := router.NewHTTPServer(handler)
+	handler := ctrl.NewBookHandler(usecase)
+	server := http.NewHTTPServer(handler)
 
 	server.RegisterRouter()
 

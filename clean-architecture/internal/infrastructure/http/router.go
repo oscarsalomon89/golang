@@ -1,9 +1,10 @@
-package router
+package http
 
 import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	ctrl "github.com/teamcubation/neocamp-meli/clean-architecture/internal/infrastructure/http/controller"
 )
 
 type HTTPServer interface {
@@ -12,16 +13,16 @@ type HTTPServer interface {
 }
 
 type httpServer struct {
-	router      *gin.Engine
-	bookHandler BookHandler
+	router   *gin.Engine
+	bookCtrl ctrl.BookController
 }
 
-func NewHTTPServer(bookHandler BookHandler) HTTPServer {
+func NewHTTPServer(bookCtrl ctrl.BookController) HTTPServer {
 	ginrouter := gin.Default()
 
 	return &httpServer{
-		router:      ginrouter,
-		bookHandler: bookHandler,
+		router:   ginrouter,
+		bookCtrl: bookCtrl,
 	}
 }
 
@@ -29,8 +30,8 @@ func (srv *httpServer) RegisterRouter() {
 	basePath := "/api/v1/books"
 	r := srv.router.Group(basePath)
 
-	r.GET("/", srv.bookHandler.GetBooks)
-	r.POST("/", srv.bookHandler.SaveBook)
+	r.GET("/", srv.bookCtrl.GetBooks)
+	r.POST("/", srv.bookCtrl.SaveBook)
 }
 
 func (srv *httpServer) Run(port string) error {
