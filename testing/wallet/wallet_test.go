@@ -1,18 +1,20 @@
-package wallet
+package wallet_test
 
 import (
 	"errors"
 	"testing"
+
+	"github.com/teamcubation/neocamp-meli/testing/wallet"
 )
 
 func TestWallet(t *testing.T) {
 	t.Parallel()
 	t.Run("Balance", func(t *testing.T) {
-		wallet := Wallet{}
+		wallet := wallet.Wallet{}
 		wallet.Deposit(10)
 		wallet.Deposit(15)
 
-		result := wallet.Balance()
+		result := wallet.Balance
 		expected := 25
 
 		if expected != result {
@@ -21,8 +23,8 @@ func TestWallet(t *testing.T) {
 	})
 
 	t.Run(("Withdraw"), func(t *testing.T) {
-		wallet := Wallet{
-			balance: 100,
+		wallet := wallet.Wallet{
+			Balance: 100,
 		}
 
 		err := wallet.Withdraw(30)
@@ -30,7 +32,7 @@ func TestWallet(t *testing.T) {
 			t.Errorf("error not expected %s", err.Error())
 		}
 
-		result := wallet.Balance()
+		result := wallet.Balance
 		expected := 70
 
 		if expected != result {
@@ -39,8 +41,8 @@ func TestWallet(t *testing.T) {
 	})
 
 	t.Run(("Withdraw Error"), func(t *testing.T) {
-		wallet := Wallet{
-			balance: 20,
+		wallet := wallet.Wallet{
+			Balance: 20,
 		}
 
 		err := wallet.Withdraw(30)
@@ -56,10 +58,10 @@ func TestWallet(t *testing.T) {
 	})
 }
 
-func TestWalletTD(t *testing.T) {
+func TestWalletTDT(t *testing.T) {
 	tests := []struct {
 		name        string
-		wallet      Wallet
+		wallet      wallet.Wallet
 		isDeposit   bool
 		amount      int
 		want        int
@@ -67,8 +69,8 @@ func TestWalletTD(t *testing.T) {
 	}{
 		{
 			name: "Balance OK: Deposit",
-			wallet: Wallet{
-				balance: 20,
+			wallet: wallet.Wallet{
+				Balance: 20,
 			},
 			isDeposit:   true,
 			amount:      25,
@@ -77,8 +79,8 @@ func TestWalletTD(t *testing.T) {
 		},
 		{
 			name: "Balance OK: Withdraw",
-			wallet: Wallet{
-				balance: 100,
+			wallet: wallet.Wallet{
+				Balance: 100,
 			},
 			isDeposit:   false,
 			amount:      25,
@@ -87,8 +89,8 @@ func TestWalletTD(t *testing.T) {
 		},
 		{
 			name: "Balance Error: Withdraw",
-			wallet: Wallet{
-				balance: 20,
+			wallet: wallet.Wallet{
+				Balance: 20,
 			},
 			isDeposit:   false,
 			amount:      25,
@@ -114,7 +116,7 @@ func TestWalletTD(t *testing.T) {
 				}
 			}
 
-			result := tt.wallet.Balance()
+			result := tt.wallet.Balance
 
 			if tt.want != result {
 				t.Errorf("result %d and expected %d", result, tt.want)
@@ -124,8 +126,8 @@ func TestWalletTD(t *testing.T) {
 }
 
 /*func TestWalletWithdraw(t *testing.T) {
-	wallet := Wallet{
-		balance: 100,
+	wallet := wallet.Wallet{
+		Balance: 100,
 	}
 
 	err := wallet.Withdraw(30)
@@ -133,7 +135,7 @@ func TestWalletTD(t *testing.T) {
 		t.Errorf("error not expected %s", err.Error())
 	}
 
-	result := wallet.Balance()
+	result := wallet.Balance
 	expected := 70
 
 	if expected != result {
@@ -142,8 +144,8 @@ func TestWalletTD(t *testing.T) {
 }
 
 func TestWalletWithdrawError(t *testing.T) {
-	wallet := Wallet{
-		balance: 20,
+	wallet := wllet.Wallet{
+		Balance: 20,
 	}
 
 	err := wallet.Withdraw(30)

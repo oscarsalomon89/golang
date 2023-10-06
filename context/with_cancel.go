@@ -10,7 +10,7 @@ import (
 func operation1(ctx context.Context) error {
 	// Let's assume that this operation failed for some reason
 	// We use time.Sleep to simulate a resource intensive operation
-	time.Sleep(1 * time.Millisecond)
+	time.Sleep(100 * time.Millisecond)
 	return errors.New("failed")
 }
 

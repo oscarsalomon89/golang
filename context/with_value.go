@@ -14,7 +14,7 @@ func doSomethingCool(ctx context.Context) {
 	fmt.Println("ctx.Value: ", apiKey)
 }
 
-func main332() {
+func main9() {
 	fmt.Println("--Go Context Example--")
 	ctx := context.Background()
 	ctx = enrichContext(ctx)
