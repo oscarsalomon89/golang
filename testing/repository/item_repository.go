@@ -1,7 +1,10 @@
 package repository
 
-//go:generate mockgen -source=./item_repository.go -destination=../mocks/item_repository_mock.go -package=mocks
+import "github.com/teamcubation/neocamp-meli/testing/domain"
+
+//go:generate mockery --name ItemRepository --output=../mocks --outpkg=mocks
 type ItemRepository interface {
-	SaveItem(name string, stock int) error
+	// SaveItem(name string, stock int) error
+	SaveItem(item domain.Item) error
 	GetItemByID(itemID uint) error
 }

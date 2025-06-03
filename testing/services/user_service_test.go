@@ -7,8 +7,8 @@ import (
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/osalomon89/go-testing/mocks"
-	"github.com/osalomon89/go-testing/services"
+	"github.com/teamcubation/neocamp-meli/testing/mocks"
+	"github.com/teamcubation/neocamp-meli/testing/services"
 
 	"testing"
 )

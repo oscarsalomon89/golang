@@ -3,7 +3,7 @@ package services
 import (
 	"fmt"
 
-	"github.com/osalomon89/go-testing/repositories"
+	"github.com/teamcubation/neocamp-meli/testing/repositories"
 )
 
 type UserService interface {

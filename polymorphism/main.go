@@ -1,56 +1,47 @@
 package main
 
-import (
-	"errors"
-	"fmt"
-)
+// import (
+// 	"errors"
+// 	"fmt"
+// )
 
-type Transactions interface {
-	Deposit(amount int)
-	Withdraw(amount int) error
-	Balance() int
-}
+// type Transactions interface {
+// 	Deposit(amount int)
+// 	Withdraw(amount int) error
+// 	Balance() int
+// }
 
-type Wallet struct {
-	balance int
-}
+// type Wallet struct {
+// 	balance int
+// }
 
-func main() {
-	//1er forma
-	var wallet = Wallet{balance: 5}
+// func main() {
+// 	var wallet = Wallet{balance: 5}
 
-	// 2da Forma
-	//wallet := Wallet{balance: 0}
+// 	wallet.Deposit(10)
+// 	wallet.Deposit(15)
 
-	//3er forma
-	/*var wallet Wallet
-	wallet.balance = 0
-	*/
+// 	printBalance(&wallet)
+// }
 
-	wallet.Deposit(10)
-	wallet.Deposit(15)
+// func printBalance(wallet Transactions) {
+// 	result := wallet.Balance()
+// 	fmt.Println(result)
+// }
 
-	printBalance(&wallet)
-}
+// func (wallet *Wallet) Deposit(amount int) {
+// 	wallet.balance += amount
+// }
 
-func printBalance(wallet Transactions) {
-	result := wallet.Balance()
-	fmt.Println(result)
-}
+// func (wallet *Wallet) Balance() int {
+// 	return wallet.balance
+// }
 
-func (wallet *Wallet) Deposit(amount int) {
-	wallet.balance += amount
-}
+// func (wallet *Wallet) Withdraw(amount int) error {
+// 	if amount > wallet.balance {
+// 		return errors.New("not enough money")
+// 	}
 
-func (wallet *Wallet) Balance() int {
-	return wallet.balance
-}
-
-func (wallet *Wallet) Withdraw(amount int) error {
-	if amount > wallet.balance {
-		return errors.New("not enough money")
-	}
-
-	wallet.balance -= amount
-	return nil
-}
+// 	wallet.balance -= amount
+// 	return nil
+// }

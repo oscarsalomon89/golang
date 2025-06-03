@@ -3,6 +3,7 @@ package usecase
 import (
 	"fmt"
 
+	"github.com/teamcubation/neocamp-meli/testing/domain"
 	"github.com/teamcubation/neocamp-meli/testing/repository"
 )
 
@@ -29,7 +30,12 @@ func (svc *itemUsecase) CreateItem(name string, stock int) error {
 		return fmt.Errorf("stock could not be zero")
 	}
 
-	err := svc.repo.SaveItem(name, stock)
+	item := domain.Item{
+		Name:  name,
+		Stock: stock,
+	}
+
+	err := svc.repo.SaveItem(item)
 	if err != nil {
 		return fmt.Errorf("error in repository: %w", err)
 	}

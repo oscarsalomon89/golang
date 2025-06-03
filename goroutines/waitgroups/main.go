@@ -10,7 +10,7 @@ func main() {
 	start := time.Now()
 	wg := sync.WaitGroup{}
 
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		wg.Add(1)
 		go getOrder(i, &wg)
 	}
@@ -22,6 +22,5 @@ func main() {
 
 func getOrder(id int, wg *sync.WaitGroup) {
 	defer wg.Done()
-	//time.Sleep(1 * time.Second)
 	fmt.Printf("The API call, number %d, was executed\n", id)
 }

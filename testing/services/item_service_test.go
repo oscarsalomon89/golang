@@ -6,10 +6,10 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/osalomon89/go-testing/mocks"
-	"github.com/osalomon89/go-testing/repositories"
-	"github.com/osalomon89/go-testing/services"
 	"github.com/stretchr/testify/assert"
+	"github.com/teamcubation/neocamp-meli/testing/mocks"
+	"github.com/teamcubation/neocamp-meli/testing/repositories"
+	"github.com/teamcubation/neocamp-meli/testing/services"
 )
 
 type itemRepositoryMock struct {

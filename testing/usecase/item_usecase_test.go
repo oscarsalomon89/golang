@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/golang/mock/gomock"
-	"github.com/osalomon89/go-testing/mocks"
 	"github.com/stretchr/testify/assert"
-	"github.com/teamcubation/neocamp-meli/testing/repository"
+	"github.com/teamcubation/neocamp-meli/testing/domain"
+	"github.com/teamcubation/neocamp-meli/testing/mocks"
 	"github.com/teamcubation/neocamp-meli/testing/usecase"
 )
 
@@ -27,121 +26,126 @@ func (repo itemRepositoryMock) GetItemByID(itemID uint) error {
 	return repo.err
 }
 
-func Test_itemUsecase_CreateItem_Manual(t *testing.T) {
-	type args struct {
-		name  string
-		stock int
-	}
+// func Test_itemUsecase_CreateItem_Manual(t *testing.T) {
+// 	type args struct {
+// 		name  string
+// 		stock int
+// 	}
 
-	tests := []struct {
-		name      string
-		repo      repository.ItemRepository
-		args      args
-		wantedErr error
-	}{
-		{
-			name: "Should works correctly",
-			repo: itemRepositoryMock{
-				err: nil,
-			},
-			args: args{
-				name:  "tablet",
-				stock: 12,
-			},
-			wantedErr: nil,
-		},
-		{
-			name: "Should return an error when the name is empty",
-			repo: itemRepositoryMock{
-				err: nil,
-			},
-			args: args{
-				name:  "",
-				stock: 12,
-			},
-			wantedErr: fmt.Errorf("item name could not be empty"),
-		},
-	}
+// 	tests := []struct {
+// 		name      string
+// 		repo      repository.ItemRepository
+// 		args      args
+// 		wantedErr error
+// 	}{
+// 		{
+// 			name: "Should works correctly",
+// 			repo: itemRepositoryMock{
+// 				err: nil,
+// 			},
+// 			args: args{
+// 				name:  "tablet",
+// 				stock: 12,
+// 			},
+// 			wantedErr: nil,
+// 		},
+// 		{
+// 			name: "Should return an error when the name is empty",
+// 			repo: itemRepositoryMock{
+// 				err: nil,
+// 			},
+// 			args: args{
+// 				name:  "",
+// 				stock: 12,
+// 			},
+// 			wantedErr: fmt.Errorf("item name could not be empty"),
+// 		},
+// 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			svc := usecase.NewItemUsecase(tt.repo)
+// 	for _, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			svc := usecase.NewItemUsecase(tt.repo)
 
-			err := svc.CreateItem(tt.args.name, tt.args.stock)
-			assert.Equal(t, err, tt.wantedErr, "itemUsecase.CreateItem() error = %v, wantErr %v", err, tt.wantedErr)
-		})
-	}
-}
+// 			err := svc.CreateItem(tt.args.name, tt.args.stock)
+// 			assert.Equal(t, err, tt.wantedErr, "itemUsecase.CreateItem() error = %v, wantErr %v", err, tt.wantedErr)
+// 		})
+// 	}
+// }
 
 func Test_itemService_CreateItem(t *testing.T) {
 	assert := assert.New(t)
 
-	type args struct {
+	type input struct {
 		name  string
 		stock int
 	}
 
+	type dependencies struct {
+		repo *mocks.ItemRepository
+	}
+
 	tests := []struct {
-		name      string
-		args      args
-		repoError error
-		repoTimes int
-		wantedErr error
+		name         string
+		args         input
+		wantedErr    error
+		dependencies func(in input, d *dependencies)
 	}{
 		{
 			name:      "Should work correctly",
 			wantedErr: nil,
-			args: args{
+			args: input{
 				name:  "tablet",
 				stock: 10,
 			},
-			repoError: nil,
-			repoTimes: 1,
+			dependencies: func(in input, d *dependencies) {
+				d.repo.On("SaveItem", domain.Item{
+					Name:  in.name,
+					Stock: in.stock,
+				}).
+					Return(nil).Once()
+			},
 		},
 		{
 			name:      "Should return error when item name is empty",
 			wantedErr: fmt.Errorf("item name could not be empty"),
-			args: args{
+			args: input{
 				name:  "",
 				stock: 10,
 			},
-			repoError: nil,
-			repoTimes: 0,
+			dependencies: func(in input, d *dependencies) {},
 		},
 		{
 			name:      "Should return error when item stock is zero",
 			wantedErr: fmt.Errorf("stock could not be zero"),
-			args: args{
+			args: input{
 				name:  "tablet",
 				stock: 0,
 			},
-			repoError: nil,
-			repoTimes: 0,
+			dependencies: func(in input, d *dependencies) {},
 		},
 		{
 			name:      "Should return error when repository returns an error",
 			wantedErr: fmt.Errorf("error in repository: %w", errors.New("the repository error")),
-			args: args{
+			args: input{
 				name:  "tablet",
 				stock: 10,
 			},
-			repoError: errors.New("the repository error"),
-			repoTimes: 1,
+			dependencies: func(in input, d *dependencies) {
+				d.repo.On("SaveItem", in.name, in.stock).
+					Return(errors.New("the repository error")).Once()
+			},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
-			repositoryMock := mocks.NewMockItemRepository(ctrl)
+			d := &dependencies{
+				repo: mocks.NewItemRepository(t),
+			}
 
-			repositoryMock.EXPECT().
-				SaveItem(tt.args.name, tt.args.stock).
-				Return(tt.repoError).
-				Times(tt.repoTimes)
+			tt.dependencies(tt.args, d)
 
-			svc := usecase.NewItemUsecase(repositoryMock)
+			svc := usecase.NewItemUsecase(d.repo)
 
 			err := svc.CreateItem(tt.args.name, tt.args.stock)
 			if tt.wantedErr != nil {
