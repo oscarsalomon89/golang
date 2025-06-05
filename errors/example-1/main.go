@@ -6,29 +6,18 @@ import (
 )
 
 // errors.New(): Se utiliza para crear errores simples com uma mensagem fixa. Es más directo y adecuado para errores simples, sin formato.
-
-// Uma função que retorna um erro se o número for negativo
-func verificarNumero(n int) error {
-	if n < 0 {
-		// Se o número for negativo, retornamos um erro
-		return errors.New("o número não pode ser negativo")
+func dividir(a, b float64) (float64, error) {
+	if b == 0 {
+		return 0, errors.New("não é possível dividir por zero")
 	}
-	// Se não houver erro, retornamos nil
-	return nil
+	return a / b, nil
 }
 
 func main() {
-	// Testamos com um número negativo
-	if err := verificarNumero(-5); err != nil {
+	resultado, err := dividir(10, 0)
+	if err != nil {
 		fmt.Println("Erro:", err)
 	} else {
-		fmt.Println("O número é válido")
-	}
-
-	// Testamos com um número positivo
-	if err := verificarNumero(10); err != nil {
-		fmt.Println("Erro:", err)
-	} else {
-		fmt.Println("O número é válido")
+		fmt.Printf("Resultado: %.2f\n", resultado)
 	}
 }
