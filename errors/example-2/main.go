@@ -19,9 +19,9 @@ func main() {
 	err := criarUsuario("oscar")
 	if err != nil {
 		fmt.Println("Erro:", err)
-	} else {
-		fmt.Println("Usuário criado com sucesso!")
 	}
+
+	fmt.Println("Usuário criado com sucesso!")
 
 	// Testando com nome válido
 	err = criarUsuario("joao")

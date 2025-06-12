@@ -14,10 +14,11 @@ func dividir(a, b float64) (float64, error) {
 }
 
 func main() {
-	resultado, err := dividir(10, 0)
+	resultado, err := dividir(10, 2)
 	if err != nil {
 		fmt.Println("Erro:", err)
-	} else {
-		fmt.Printf("Resultado: %.2f\n", resultado)
 	}
+
+	fmt.Printf("Resultado: %.2f\n", resultado)
+
 }

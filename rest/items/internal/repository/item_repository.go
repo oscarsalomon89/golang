@@ -22,13 +22,21 @@ func NewMySQLItemRepository(db *sqlx.DB) *mysqlItemRepository {
 }
 
 func (r *mysqlItemRepository) GetItemByID(id uint) (entity.Item, error) {
-	return entity.Item{}, nil
+	item := entity.Item{}
+	err := r.conn.Get(&item, "SELECT id, code, title, description, price, stock, status, created_at, updated_at FROM items WHERE id = ?", id)
+	if err != nil {
+		return item, err
+	}
+
+	return item, nil
 }
 
 func (r *mysqlItemRepository) AddItem(item *entity.Item) error {
+	// TODO: implement
 	return nil
 }
 
 func (r *mysqlItemRepository) GetItems() ([]entity.Item, error) {
+	// TODO: implement
 	return nil, nil
 }

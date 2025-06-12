@@ -1,6 +1,7 @@
 // Definimos una interfaz "Forma"
 interface Forma {
     double area();
+    double perimeter();
 }
 
 // Implementamos la interfaz en la clase "Cuadrado"
@@ -15,6 +16,11 @@ class Cuadrado implements Forma {
     public double area() {
         return lado * lado;
     }
+
+    @Override
+    public double perimeter() {
+        return 4 * lado;
+    }
 }
 
 // Implementamos la interfaz en la clase "Círculo"
@@ -28,6 +34,11 @@ class Circulo implements Forma {
     @Override
     public double area() {
         return Math.PI * radio * radio;
+    }
+
+    @Override
+    public double perimeter() {
+        return 2 * Math.PI * radio;
     }
 }
 

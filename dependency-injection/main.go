@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"my-api/repository"
+	"my-api/service"
+)
 
 // Interface para um serviço de notificação
 type NotificadorServico interface {
@@ -27,17 +31,19 @@ type Usuario struct {
 	Notificador NotificadorServico
 }
 
-func (u Usuario) EnviarNotificacao(mensagem string) {
-	u.Notificador.Enviar(mensagem)
-}
-
 func main() {
-	emailServico := EmailServico{}
-	smsServico := SMSServico{}
+	// emailServico := EmailServico{}
+	// smsServico := SMSServico{}
 
-	usuario1 := Usuario{Nome: "João", Notificador: emailServico}
-	usuario2 := Usuario{Nome: "Maria", Notificador: smsServico}
+	// usuario1 := Usuario{Nome: "João", Notificador: emailServico}
 
-	usuario1.EnviarNotificacao("¡Hola, João!")
-	usuario2.EnviarNotificacao("¡Hola, Maria!")
+	// usuario2 := Usuario{Nome: "Maria", Notificador: smsServico}
+
+	// usuario1.EnviarNotificacao("¡Hola, João!")
+	// usuario2.EnviarNotificacao("¡Hola, Maria!")
+
+	repo := repository.NewMongoRepository()
+	userService := service.NewUserService(repo)
+
+	fmt.Println(userService.FindAll())
 }

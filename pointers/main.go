@@ -27,7 +27,7 @@ import "fmt"
 // ******************Exemplo 3
 // func main() {
 // 	x := 10
-// 	sumar(&x)
+// 	sumar(x)
 // 	fmt.Println("x após sumar 5:", x)
 // }
 
@@ -36,10 +36,10 @@ import "fmt"
 // }
 
 // ******************Exemplo 4
-type Pessoa struct {
-	nome  string
-	idade int
-}
+// type Pessoa struct {
+// 	nome  string
+// 	idade int
+// }
 
 // func fazerAniversario(p *Pessoa) {
 // 	p.idade++
@@ -100,34 +100,32 @@ type Pessoa struct {
 // 18
 // 19 Imprime valor do name (Oscar)
 
-type Lista struct {
-	itens []string
+type CarrinhoDeCompras struct {
+	produtos []string
 }
 
-// Método com receiver sem ponteiro (não altera a lista original)
-func (l Lista) AdicionarSemPonteiro(item string) {
-	l.itens = append(l.itens, item)
-	fmt.Println("Dentro de AdicionarSemPonteiro:", l.itens)
+// Método com receiver sem ponteiro (não altera o carrinho original)
+func (c CarrinhoDeCompras) AdicionarProdutoSemPonteiro(produto string) {
+	c.produtos = append(c.produtos, produto)
+	fmt.Println("Dentro de AdicionarProdutoSemPonteiro:", c.produtos)
 }
 
-// parametros por valor y por referencia
-
-// Método com receiver com ponteiro (altera a lista original)
-func (l *Lista) AdicionarComPonteiro(item string) {
-	l.itens = append(l.itens, item)
-	fmt.Println("Dentro de AdicionarComPonteiro:", l.itens)
+// Método com receiver com ponteiro (altera o carrinho original)
+func (c *CarrinhoDeCompras) AdicionarProdutoComPonteiro(produto string) {
+	c.produtos = append(c.produtos, produto)
+	fmt.Println("Dentro de AdicionarProdutoComPonteiro:", c.produtos)
 }
 
 func main() {
-	lista := Lista{
-		itens: []string{"Oscar"},
+	carrinho := CarrinhoDeCompras{
+		produtos: []string{"Arroz"},
 	}
 
 	// Usando sem ponteiro
-	lista.AdicionarSemPonteiro("Maçã")
-	fmt.Println("Depois de AdicionarSemPonteiro:", lista.itens)
+	// carrinho.AdicionarProdutoSemPonteiro("Feijão")
+	// fmt.Println("Depois de AdicionarProdutoSemPonteiro:", carrinho.produtos)
 
 	// Usando com ponteiro
-	lista.AdicionarComPonteiro("Banana")
-	fmt.Println("Depois de AdicionarComPonteiro:", lista.itens)
+	carrinho.AdicionarProdutoComPonteiro("Farinha")
+	fmt.Println("Depois de AdicionarProdutoComPonteiro:", carrinho.produtos)
 }

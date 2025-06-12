@@ -76,14 +76,15 @@ func (ctrl ItemController) AddItem(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"Error": false,
-		"Data":  result,
+		"StatusCode": http.StatusOK,
+		"Message":    "success",
+		"Error":      false,
+		"Data":       result,
 	})
 }
 
 func (ctrl *ItemController) GetItem(c *gin.Context) {
 	idParam := c.Param("id")
-
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

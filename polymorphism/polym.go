@@ -5,7 +5,7 @@ import (
 )
 
 type Forma interface {
-	Area() float64
+	Area() int64
 	Perimeter() float64
 }
 
@@ -18,8 +18,8 @@ type Quadrado struct {
 	Lado float64
 }
 
-func (q Quadrado) Area() float64 {
-	return q.Lado * q.Lado
+func (q Quadrado) Area() int64 {
+	return int64(q.Lado * q.Lado)
 }
 
 func (c Quadrado) Perimeter() float64 {
@@ -30,8 +30,8 @@ type Circulo struct {
 	Raio float64
 }
 
-func (c Circulo) Area() float64 {
-	return 3.1416 * c.Raio * c.Raio
+func (c Circulo) Area() int64 {
+	return int64(3.1416 * c.Raio * c.Raio)
 }
 
 func (c Circulo) Perimeter() float64 {
@@ -52,35 +52,17 @@ func imprimirInfo(f Forma) {
 	fmt.Println("Perimeter:", f.Perimeter())
 }
 
-func criarForma(tipo string, medida int) Forma {
-	switch tipo {
-	case "quadrado":
-		return Quadrado{Lado: float64(medida)}
-	case "circulo":
-		return Circulo{Raio: float64(medida)}
-	default:
-		return nil
-	}
-}
-
-type Biblioteca struct {
-	Formas []Forma
+func imprimirInfo2(f Comportamento) {
+	f.Falar()
+	f.Rodar()
 }
 
 func main() {
-	quadrado := criarForma("quadrado", 4)
-	if quadrado == nil {
-		fmt.Println("error")
-	}
+	quadrado := Quadrado{Lado: 4}
 	circulo := Circulo{Raio: 5}
 
-	var biblioteca []Forma
-
-	biblioteca = append(biblioteca, quadrado, circulo)
-
-	fmt.Println(biblioteca)
-
-	// Ambos os tipos implementam a interface "Forma"
 	imprimirInfo(quadrado)
+	fmt.Println("----------------")
 	imprimirInfo(circulo)
+	imprimirInfo2(circulo)
 }

@@ -18,7 +18,6 @@ func main() {
 	}
 
 	itemRepository := repository.NewMySQLItemRepository(conn)
-	//itemUsecase := service.NewItemUsecase(itemRepository)
 	itemUsecase := service.ItemService{
 		Repo: itemRepository,
 	}

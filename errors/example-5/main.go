@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -20,7 +21,11 @@ func sacar(valor, saldo float64) error {
 func main() {
 	err := sacar(100, 50)
 	if err != nil {
-		fmt.Println("Erro:", err)
+		if errors.Is(err, ErroSaldoInsuficiente{}) {
+			fmt.Println("Erro: Saldo insuficiente (erro original).")
+		} else {
+			fmt.Println("Erro:", err)
+		}
 	}
 
 	fmt.Println("fin")
