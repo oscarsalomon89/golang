@@ -4,19 +4,29 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/teamcubation/neocamp-meli/rest/restful/controller"
+	"github.com/teamcubation/neocamp-meli/rest/restful/handler"
+	"github.com/teamcubation/neocamp-meli/rest/restful/repository"
 )
 
 func main() {
 	r := gin.Default()
 
+	bookHandler := &handler.BookHandler{
+		Repo: repository.BookRepository{},
+	}
+
+	// KVS (DynamoDB)
+	// DS (elastic search)
+	// MySQL
+
+	//GET /books/2
 	r.GET("", index)
-	r.GET("/books", controller.GetBooks)
-	r.POST("/books", controller.AddBook)
-	r.GET("/books/:id", controller.GetBook)
-	r.GET("/books/find/:name", controller.GetBookByName)
-	r.PUT("/books/:id", controller.UpdateBook)
-	r.DELETE("/books/:id", controller.DeleteBook)
+	r.GET("/books", bookHandler.GetBooks)
+	r.POST("/books", bookHandler.AddBook)
+	r.GET("/books/:id", bookHandler.GetBook)
+	r.GET("/books/find/:name", bookHandler.GetBookByName)
+	r.PUT("/books/:id", bookHandler.UpdateBook)
+	r.DELETE("/books/:id", bookHandler.DeleteBook)
 
 	r.Run(":8080")
 }

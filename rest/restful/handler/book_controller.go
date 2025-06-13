@@ -1,4 +1,4 @@
-package controller
+package handler
 
 import (
 	"encoding/json"
@@ -7,24 +7,26 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/teamcubation/neocamp-meli/rest/restful/entity"
+	"github.com/teamcubation/neocamp-meli/rest/restful/repository"
 )
-
-var db []entity.Book
-var id int = 4
 
 type ResponseInfo struct {
 	Error  bool `json:"error"`
 	Result any  `json:"result"`
 }
 
-func GetBooks(c *gin.Context) {
+type BookHandler struct {
+	Repo repository.BookRepository
+}
+
+func (h *BookHandler) GetBooks(c *gin.Context) {
 	c.JSON(http.StatusOK, ResponseInfo{
 		Error:  false,
-		Result: db,
+		Result: h.Repo.GetBooks(),
 	})
 }
 
-func GetBook(c *gin.Context) {
+func (h *BookHandler) GetBook(c *gin.Context) {
 	idParam := c.Param("id")
 
 	id, err := strconv.Atoi(idParam)
@@ -36,44 +38,40 @@ func GetBook(c *gin.Context) {
 		return
 	}
 
-	//chamar a repository para procurar na tabela getBook(id) book
-
-	for _, v := range db {
-		if v.ID == id {
-			c.JSON(http.StatusOK, ResponseInfo{
-				Error:  false,
-				Result: v,
-			})
-			return
-		}
+	book := h.Repo.GetBook(id)
+	if book.ID == 0 {
+		c.JSON(http.StatusNotFound, ResponseInfo{
+			Error:  true,
+			Result: "book not found",
+		})
+		return
 	}
 
-	c.JSON(http.StatusNotFound, ResponseInfo{
-		Error:  true,
-		Result: "book not found",
+	c.JSON(http.StatusOK, ResponseInfo{
+		Error:  false,
+		Result: book,
 	})
 }
 
-func GetBookByName(c *gin.Context) {
+func (h *BookHandler) GetBookByName(c *gin.Context) {
 	title := c.Param("name")
 
-	for _, v := range db {
-		if v.Title == title {
-			c.JSON(http.StatusOK, ResponseInfo{
-				Error:  false,
-				Result: v,
-			})
-			return
-		}
+	book := h.Repo.GetBookByName(title)
+	if book.ID == 0 {
+		c.JSON(http.StatusNotFound, ResponseInfo{
+			Error:  true,
+			Result: "book not found",
+		})
+		return
 	}
 
-	c.JSON(http.StatusNotFound, ResponseInfo{
-		Error:  true,
-		Result: "book not found",
+	c.JSON(http.StatusOK, ResponseInfo{
+		Error:  false,
+		Result: book,
 	})
 }
 
-func AddBook(c *gin.Context) {
+func (h *BookHandler) AddBook(c *gin.Context) {
 	var book entity.Book
 	err := json.NewDecoder(c.Request.Body).Decode(&book)
 	if err != nil {
@@ -92,10 +90,7 @@ func AddBook(c *gin.Context) {
 		return
 	}
 
-	book.ID = id
-	db = append(db, book)
-
-	id++
+	h.Repo.AddBook(book)
 
 	c.JSON(http.StatusCreated, ResponseInfo{
 		Error:  false,
@@ -103,7 +98,7 @@ func AddBook(c *gin.Context) {
 	})
 }
 
-func UpdateBook(c *gin.Context) {
+func (h *BookHandler) UpdateBook(c *gin.Context) {
 	idParam := c.Param("id")
 
 	id, err := strconv.Atoi(idParam)
@@ -125,19 +120,16 @@ func UpdateBook(c *gin.Context) {
 		return
 	}
 
-	for i, v := range db {
-		if v.ID == id {
-			db[i] = book
-		}
-	}
+	book.ID = id
+	h.Repo.UpdateBook(book)
 
 	c.JSON(http.StatusOK, ResponseInfo{
 		Error:  false,
-		Result: db,
+		Result: book,
 	})
 }
 
-func DeleteBook(c *gin.Context) {
+func (h *BookHandler) DeleteBook(c *gin.Context) {
 	idParam := c.Param("id")
 
 	id, err := strconv.Atoi(idParam)
@@ -149,11 +141,7 @@ func DeleteBook(c *gin.Context) {
 		return
 	}
 
-	for i, v := range db {
-		if v.ID == id {
-			db = append(db[:i], db[i+1:]...)
-		}
-	}
+	h.Repo.DeleteBook(id)
 
 	c.JSON(http.StatusOK, ResponseInfo{
 		Error:  false,
