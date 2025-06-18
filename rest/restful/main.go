@@ -11,15 +11,14 @@ import (
 func main() {
 	r := gin.Default()
 
-	bookHandler := &handler.BookHandler{
-		Repo: repository.BookRepository{},
+	db, err := repository.GetConnectionDB()
+	if err != nil {
+		panic(err)
 	}
 
-	// KVS (DynamoDB)
-	// DS (elastic search)
-	// MySQL
+	repo := repository.NewBookRepository(db)
+	bookHandler := handler.NewBookHandler(repo)
 
-	//GET /books/2
 	r.GET("", index)
 	r.GET("/books", bookHandler.GetBooks)
 	r.POST("/books", bookHandler.AddBook)

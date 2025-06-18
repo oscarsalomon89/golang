@@ -16,13 +16,19 @@ type ResponseInfo struct {
 }
 
 type BookHandler struct {
-	Repo repository.BookRepository
+	repo *repository.BookRepository
+}
+
+func NewBookHandler(repo *repository.BookRepository) *BookHandler {
+	return &BookHandler{repo: repo}
 }
 
 func (h *BookHandler) GetBooks(c *gin.Context) {
+	name := c.Query("title")
+
 	c.JSON(http.StatusOK, ResponseInfo{
 		Error:  false,
-		Result: h.Repo.GetBooks(),
+		Result: h.repo.GetBooks(name),
 	})
 }
 
@@ -38,7 +44,7 @@ func (h *BookHandler) GetBook(c *gin.Context) {
 		return
 	}
 
-	book := h.Repo.GetBook(id)
+	book := h.repo.GetBook(id)
 	if book.ID == 0 {
 		c.JSON(http.StatusNotFound, ResponseInfo{
 			Error:  true,
@@ -56,7 +62,7 @@ func (h *BookHandler) GetBook(c *gin.Context) {
 func (h *BookHandler) GetBookByName(c *gin.Context) {
 	title := c.Param("name")
 
-	book := h.Repo.GetBookByName(title)
+	book := h.repo.GetBookByName(title)
 	if book.ID == 0 {
 		c.JSON(http.StatusNotFound, ResponseInfo{
 			Error:  true,
@@ -71,8 +77,14 @@ func (h *BookHandler) GetBookByName(c *gin.Context) {
 	})
 }
 
+type NewBook struct {
+	Author string `json:"author"`
+	Title  string `json:"title"`
+	Price  int    `json:"price"`
+}
+
 func (h *BookHandler) AddBook(c *gin.Context) {
-	var book entity.Book
+	var book NewBook
 	err := json.NewDecoder(c.Request.Body).Decode(&book)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, ResponseInfo{
@@ -90,11 +102,24 @@ func (h *BookHandler) AddBook(c *gin.Context) {
 		return
 	}
 
-	h.Repo.AddBook(book)
+	bookEntity := entity.Book{
+		Author: book.Author,
+		Title:  book.Title,
+		Price:  book.Price,
+	}
+
+	result, err := h.repo.AddBook(bookEntity)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, ResponseInfo{
+			Error:  true,
+			Result: err.Error(),
+		})
+		return
+	}
 
 	c.JSON(http.StatusCreated, ResponseInfo{
 		Error:  false,
-		Result: "criado com sucesso",
+		Result: result,
 	})
 }
 
@@ -121,7 +146,7 @@ func (h *BookHandler) UpdateBook(c *gin.Context) {
 	}
 
 	book.ID = id
-	h.Repo.UpdateBook(book)
+	h.repo.UpdateBook(book)
 
 	c.JSON(http.StatusOK, ResponseInfo{
 		Error:  false,
@@ -141,7 +166,7 @@ func (h *BookHandler) DeleteBook(c *gin.Context) {
 		return
 	}
 
-	h.Repo.DeleteBook(id)
+	h.repo.DeleteBook(id)
 
 	c.JSON(http.StatusOK, ResponseInfo{
 		Error:  false,
