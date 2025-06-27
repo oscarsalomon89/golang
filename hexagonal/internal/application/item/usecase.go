@@ -5,7 +5,10 @@ import (
 )
 
 type ItemUseCase interface {
-	CreateItem(name string) error
+	CreateItem(item *item.Item) error
+	GetItemByID(id int) (item.Item, error)
+	GetItems() ([]item.Item, error)
+	DeleteItem(id int) error
 }
 
 type itemUseCase struct {
@@ -16,7 +19,18 @@ func NewItemUseCase(repo item.Repository) *itemUseCase {
 	return &itemUseCase{repo: repo}
 }
 
-func (uc *itemUseCase) CreateItem(name string) error {
-	i := item.Item{Name: name}
-	return uc.repo.Save(i)
+func (uc *itemUseCase) CreateItem(item *item.Item) error {
+	return uc.repo.Save(item)
+}
+
+func (uc *itemUseCase) GetItemByID(id int) (item.Item, error) {
+	return uc.repo.GetItemByID(id)
+}
+
+func (uc *itemUseCase) GetItems() ([]item.Item, error) {
+	return uc.repo.GetItems()
+}
+
+func (uc *itemUseCase) DeleteItem(id int) error {
+	return uc.repo.DeleteItem(id)
 }
