@@ -1,10 +1,12 @@
 package itemhdl
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	uc "github.com/osalomon/market-api/internal/application/item"
 	"github.com/osalomon/market-api/internal/domain/item"
 )
@@ -18,10 +20,10 @@ func NewHandler(useCase uc.ItemUseCase) *itemHandler {
 }
 
 type ItemRequest struct {
-	Name        string  `json:"name"`
-	Price       float64 `json:"price"`
-	Description string  `json:"description"`
-	Stock       int     `json:"stock"`
+	Name        string  `json:"name" validate:"required,gt=3"`
+	Price       float64 `json:"price" validate:"required,numeric,gt=0"`
+	Description string  `json:"description" validate:"required"`
+	Stock       int     `json:"stock" validate:"required,numeric,gte=0"`
 }
 
 func (i ItemRequest) ToItemDomain() item.Item {
@@ -35,11 +37,19 @@ func (i ItemRequest) ToItemDomain() item.Item {
 
 func (h *itemHandler) CreateItem(c *gin.Context) {
 	var body ItemRequest
+	validate := validator.New()
 
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	if err := validate.Struct(body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	fmt.Println(body)
 
 	itemDomain := body.ToItemDomain()
 

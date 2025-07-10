@@ -20,7 +20,7 @@ func main() {
 	ginEngine := gin.Default()
 	v1 := ginEngine.Group("/v1/market-api")
 
-	if err := godotenv.Load("../../.env"); err != nil {
+	if err := godotenv.Load(".env"); err != nil {
 		panic(err)
 	}
 
